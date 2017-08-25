@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">柚子影音</string>
+
+    <!-- 底部选项卡信息 -->
+    <string name="tab_name_audio">音乐</string>
+    <string name="tab_name_video">视频</string>
+    <string name="tab_name_setting">设置</string>
+
+    <string name="splash_ad_ignore">跳过广告</string>
+</resources>
