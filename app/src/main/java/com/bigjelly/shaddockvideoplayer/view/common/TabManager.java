@@ -64,14 +64,14 @@ public class TabManager {
             mTabLayout.addTab(mTabLayout.newTab().setCustomView(getTabItemView(i, mainTab)).setTag(new TabInfo(mainTab.getClazz())), false);
         }
         changeTab(intent);
-        mTabTextView[mLastIdx].setTextColor(AndFastApplication.getContext().getResources().getColor(R.color.tab_font_red));
+        mTabTextView[mLastIdx].setTextColor(AndFastApplication.getContext().getResources().getColor(R.color.colorPrimary));
     }
 
     public void changeTab(Intent intent) {
         int tab = intent.getIntExtra(GeneralID.Extra.TAB, 0);
         tab = Math.min(tab, MainTab.values().length - 1);
         mTabLayout.getTabAt(tab).select();
-        mTabTextView[mLastIdx].setTextColor(AndFastApplication.getContext().getResources().getColor(R.color.tab_font_red));
+        mTabTextView[mLastIdx].setTextColor(AndFastApplication.getContext().getResources().getColor(R.color.colorPrimary));
     }
 
     public View getTabItemView(int i, MainTab mainTab) {
@@ -139,7 +139,7 @@ public class TabManager {
         //title_common_bg  tv_share_picture
         mTabTextView[mLastIdx].setTextColor(AndFastApplication.getContext().getResources().getColor(R.color.share_picture));
         mCurrentIdx = mTabLayout.getSelectedTabPosition();
-        mTabTextView[mCurrentIdx].setTextColor(AndFastApplication.getContext().getResources().getColor(R.color.tab_font_red));
+        mTabTextView[mCurrentIdx].setTextColor(AndFastApplication.getContext().getResources().getColor(R.color.colorPrimary));
         mLastIdx = mCurrentIdx;
     }
 

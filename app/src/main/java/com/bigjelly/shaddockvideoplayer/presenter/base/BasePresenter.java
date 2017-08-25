@@ -1,12 +1,8 @@
 package com.bigjelly.shaddockvideoplayer.presenter.base;
 
 
-import com.bigjelly.shaddockvideoplayer.AndFastApplication;
-import com.bigjelly.shaddockvideoplayer.constant.GeneralID;
 import com.bigjelly.shaddockvideoplayer.net.ApiRetrofit;
 import com.bigjelly.shaddockvideoplayer.net.ApiService;
-import com.bigjelly.shaddockvideoplayer.net.ResultResponse;
-import com.bigjelly.shaddockvideoplayer.util.NetworkUtils;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -41,14 +37,6 @@ public class BasePresenter<V> {
         if (mCompositeSubscription == null) {
             mCompositeSubscription = new CompositeSubscription();
         }
-        if (!NetworkUtils.isAvailable(AndFastApplication.getContext())){
-            observable = Observable.create(new Observable.OnSubscribe<ResultResponse<V>>() {
-                @Override
-                public void call(Subscriber<? super ResultResponse<V>> subscriber) {
-                    subscriber.onNext(new ResultResponse<V>("", GeneralID.TYPE_NET_UNAVAILABLE_CODE,false,"",null));
-                }
-            });
-        }
         mCompositeSubscription.add(observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -61,17 +49,4 @@ public class BasePresenter<V> {
             mCompositeSubscription.unsubscribe();
         }
     }
-
-    public Observable createObservable(final Object data, final boolean result){
-        return Observable.create(new Observable.OnSubscribe<ResultResponse>() {
-            @Override
-            public void call(Subscriber<? super ResultResponse> subscriber) {
-                ResultResponse objectResultResponse = new ResultResponse<>();
-                objectResultResponse.success = result;
-                objectResultResponse.data = data;
-                subscriber.onNext(objectResultResponse);
-            }
-        });
-    }
-
 }

@@ -24,6 +24,7 @@ public class GeneralID {
     /**网络请求异常code*/
     public final static int TYPE_NET_UNAVAILABLE_CODE = 1004;
     public final static int TYPE_NET_ERROR_CODE = TYPE_NET_UNAVAILABLE_CODE+1;
+    public final static int TYPE_GET_DATA_ERROR_CODE = TYPE_NET_ERROR_CODE +1;
 
     // EventBus Code
     public static final class EventCode {

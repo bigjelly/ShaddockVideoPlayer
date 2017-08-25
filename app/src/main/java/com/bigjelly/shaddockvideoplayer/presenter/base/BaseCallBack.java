@@ -12,9 +12,4 @@ public abstract class BaseCallBack<T> extends Subscriber<T> {
     public void onCompleted() {
 
     }
-
-    @Override
-    public void onError(Throwable e) {
-
-    }
 }

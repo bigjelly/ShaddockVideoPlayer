@@ -3,6 +3,6 @@
     android:shape="rectangle">
 
     <size android:height="1dp"/>
-    <solid android:color="@color/tab_background"/>
+    <solid android:color="@color/decoration_background"/>
 
 </shape>

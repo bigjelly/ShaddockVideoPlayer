@@ -22,7 +22,6 @@ public abstract class SubscriberCallBack<T> extends BaseCallBack<ResultResponse<
 
     @Override
     public void onError(Throwable e) {
-        super.onError(e);
         onFailure(new ResultResponse("", GeneralID.TYPE_NET_ERROR_CODE,false,"",e));
     }
 

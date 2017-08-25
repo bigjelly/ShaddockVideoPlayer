@@ -1,8 +1,9 @@
 package com.bigjelly.shaddockvideoplayer.view.base;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.bigjelly.shaddockvideoplayer.presenter.base.BasePresenter;
 
@@ -16,9 +17,9 @@ public abstract class BasePresenterFragment<P extends BasePresenter> extends Bas
     protected P mvpPresenter;
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (mvpPresenter == null) mvpPresenter = createPresenter();
-        super.onViewCreated(view, savedInstanceState);
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     protected abstract P createPresenter();

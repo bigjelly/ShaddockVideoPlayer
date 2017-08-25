@@ -25,7 +25,7 @@
             android:ellipsize="end"
             android:lines="1"
             android:scrollHorizontally="true"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/com_text" />
 
     </android.support.v7.widget.Toolbar>
 
