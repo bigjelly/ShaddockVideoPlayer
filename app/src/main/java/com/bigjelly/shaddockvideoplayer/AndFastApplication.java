@@ -26,6 +26,7 @@ public class AndFastApplication extends Application {
         LogUtils.i(TAG,"<><><><><><><><><>");
         LogUtils.i(TAG," app is start!");
         LogUtils.i(TAG,"<><><><><><><><><>");
+
     }
 
     private void initLog() {
