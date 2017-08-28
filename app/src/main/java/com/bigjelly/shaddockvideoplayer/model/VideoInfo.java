@@ -11,7 +11,7 @@ public class VideoInfo extends Entity {
     public String name;
     public String path;
     public String time;
-    public long size;
+    public String size;
     public Bitmap img;
     public byte[] imgBytes;
 }

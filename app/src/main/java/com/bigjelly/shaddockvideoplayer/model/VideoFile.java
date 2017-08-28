@@ -1,6 +1,5 @@
 package com.bigjelly.shaddockvideoplayer.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,6 +9,6 @@ import java.util.List;
 public class VideoFile extends Entity{
     public String name;
     public String path;
-    public List<VideoInfo> videoInfos = new ArrayList<>();
-    public int number = videoInfos.size();
+    public int count;
+    public List<VideoInfo> videoInfos;
 }

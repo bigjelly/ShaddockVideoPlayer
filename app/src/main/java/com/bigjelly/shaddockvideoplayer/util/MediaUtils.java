@@ -1,5 +1,9 @@
 package com.bigjelly.shaddockvideoplayer.util;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
+
 /**
  * Created by mby on 17-8-24.
  */
@@ -46,4 +50,27 @@ public class MediaUtils {
             "vpm", "vqf", "vrf", "vyf", "w01", "wav", "wav", "wave", "wax", "wfb", "wfd", "wfp", "wma", "wow", "wpk", "wproj", "wrk", "wus",
             "wut", "wv", "wvc", "wve", "wwu", "xa", "xa", "xfs", "xi", "xm", "xmf", "xmi", "xmz", "xp", "xrns", "xsb", "xspf", "xt", "xwb",
             "ym", "zvd", "zvr" };
+
+    private static final HashSet<String> mHashVideo;
+
+    static {
+        mHashVideo = new HashSet<String>(Arrays.asList(VIDEO_EXTENSIONS));
+    }
+
+    /** 获取文件后缀 */
+    public static String getFileExtension(File f) {
+        if (f != null) {
+            String filename = f.getName();
+            int i = filename.lastIndexOf('.');
+            if (i > 0 && i < filename.length() - 1) {
+                return filename.substring(i + 1).toLowerCase();
+            }
+        }
+        return null;
+    }
+
+    public static boolean isVideo(File f) {
+        final String ext = getFileExtension(f);
+        return mHashVideo.contains(ext);
+    }
 }

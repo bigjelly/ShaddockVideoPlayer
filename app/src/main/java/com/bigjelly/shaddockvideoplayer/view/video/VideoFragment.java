@@ -21,7 +21,7 @@ import java.util.List;
  * Created by mby on 17-7-31.
  */
 
-public class VideoFragment extends BasePresenterFragment<VideoFilePresenter> implements IVideoFileView {
+public class VideoFragment extends BasePresenterFragment<VideoFilePresenter> implements IVideoFileView, PullRecyclerView.OnRecyclerRefreshListener {
 
     private PullRecyclerView mRecyclerView;
     private XLinearLayoutManager mLayoutManager;
@@ -47,14 +47,15 @@ public class VideoFragment extends BasePresenterFragment<VideoFilePresenter> imp
         mRecyclerView.addItemDecoration(itemDecoration);
         mAdpater = new VideoListAdpater(getContext(), R.layout.lay_item_video_file, new ArrayList<VideoFile>());
         mRecyclerView.setAdapter(mAdpater);
-        mRecyclerView.enablePullRefresh(false);
+        mRecyclerView.enablePullRefresh(true); // 开启下拉刷新，默认即为true，可不用设置
         mRecyclerView.enableLoadMore(false);
+        mRecyclerView.setOnRecyclerRefreshListener(this);
     }
 
     @Override
     protected void initData() {
         super.initData();
-        mvpPresenter.getVideoFileList();
+        mRecyclerView.postRefreshing();
     }
 
     @Override
@@ -69,6 +70,17 @@ public class VideoFragment extends BasePresenterFragment<VideoFilePresenter> imp
 
     @Override
     public void onVideoFileSuccess(List<VideoFile> response) {
+        mRecyclerView.stopRefresh();
         mAdpater.replaceAll(response);
+    }
+
+    @Override
+    public void onPullRefresh() {
+        mvpPresenter.getVideoFileList();
+    }
+
+    @Override
+    public void onLoadMore() {
+
     }
 }
