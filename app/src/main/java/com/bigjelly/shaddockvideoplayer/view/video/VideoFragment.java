@@ -1,27 +1,20 @@
 package com.bigjelly.shaddockvideoplayer.view.video;
 
-import android.support.v7.widget.DividerItemDecoration;
 import android.view.View;
-import android.widget.TextView;
 
 import com.andfast.pullrecyclerview.PullRecyclerView;
 import com.andfast.pullrecyclerview.layoutmanager.XLinearLayoutManager;
 import com.bigjelly.shaddockvideoplayer.R;
-import com.bigjelly.shaddockvideoplayer.model.VideoFile;
-import com.bigjelly.shaddockvideoplayer.net.ResultResponse;
-import com.bigjelly.shaddockvideoplayer.presenter.video.VideoFilePresenter;
-import com.bigjelly.shaddockvideoplayer.view.base.BasePresenterFragment;
-import com.bigjelly.shaddockvideoplayer.view.video.Impl.IVideoFileView;
+import com.bigjelly.shaddockvideoplayer.util.FragmentUtils;
+import com.bigjelly.shaddockvideoplayer.view.base.BaseFragment;
 import com.bigjelly.shaddockvideoplayer.view.video.adapter.VideoListAdpater;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.bigjelly.shaddockvideoplayer.view.video.fragment.VideoFileListFragment;
 
 /**
  * Created by mby on 17-7-31.
  */
 
-public class VideoFragment extends BasePresenterFragment<VideoFilePresenter> implements IVideoFileView, PullRecyclerView.OnRecyclerRefreshListener {
+public class VideoFragment extends BaseFragment {
 
     private PullRecyclerView mRecyclerView;
     private XLinearLayoutManager mLayoutManager;
@@ -35,52 +28,11 @@ public class VideoFragment extends BasePresenterFragment<VideoFilePresenter> imp
     @Override
     protected void initWidget(View root) {
         super.initWidget(root);
-        TextView textView =findView(R.id.toolbar_title);
-        textView.setText(R.string.tab_name_video);
-        mRecyclerView = findView(R.id.pull_recycler_view);
-
-        // 初始化PullRecyclerView
-        mLayoutManager = new XLinearLayoutManager(getContext());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
-        itemDecoration.setDrawable(getResources().getDrawable(R.drawable.shape_simple_item_decoration));
-        mRecyclerView.addItemDecoration(itemDecoration);
-        mAdpater = new VideoListAdpater(getContext(), R.layout.lay_item_video_file, new ArrayList<VideoFile>());
-        mRecyclerView.setAdapter(mAdpater);
-        mRecyclerView.enablePullRefresh(true); // 开启下拉刷新，默认即为true，可不用设置
-        mRecyclerView.enableLoadMore(false);
-        mRecyclerView.setOnRecyclerRefreshListener(this);
+        FragmentUtils.replace(getFragmentManager(),R.id.video_frg,new VideoFileListFragment(),true,"VideoFileList");
     }
 
     @Override
     protected void initData() {
         super.initData();
-        mRecyclerView.postRefreshing();
-    }
-
-    @Override
-    protected VideoFilePresenter createPresenter() {
-        return new VideoFilePresenter(this);
-    }
-
-    @Override
-    public void onError(int type, ResultResponse<VideoFile> response) {
-
-    }
-
-    @Override
-    public void onVideoFileSuccess(List<VideoFile> response) {
-        mRecyclerView.stopRefresh();
-        mAdpater.replaceAll(response);
-    }
-
-    @Override
-    public void onPullRefresh() {
-        mvpPresenter.getVideoFileList();
-    }
-
-    @Override
-    public void onLoadMore() {
-
     }
 }

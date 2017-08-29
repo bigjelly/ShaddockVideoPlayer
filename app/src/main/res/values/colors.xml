@@ -14,5 +14,7 @@
     <!-- 底部tab -->
     <color name="share_picture">#FF222222</color>
 
+    <color name="list_item_background">#FFFFFF</color>
+
 
 </resources>

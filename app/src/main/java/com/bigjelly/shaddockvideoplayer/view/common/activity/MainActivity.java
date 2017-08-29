@@ -5,23 +5,26 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
-import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.bigjelly.shaddockvideoplayer.R;
 import com.bigjelly.shaddockvideoplayer.constant.GeneralID;
 import com.bigjelly.shaddockvideoplayer.util.LogUtils;
 import com.bigjelly.shaddockvideoplayer.view.base.BaseActivity;
+import com.bigjelly.shaddockvideoplayer.view.base.BaseFragment;
+import com.bigjelly.shaddockvideoplayer.view.base.Impl.BackHandledInterface;
 import com.bigjelly.shaddockvideoplayer.view.common.TabManager;
 
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements BackHandledInterface {
 
     private static final int REQUEST_PERMISSION = 100;
 
     private static final String TAG = "MainActivity";
     private long mKeyTime = 0;
     TabManager mTabManager;
+
+    private BaseFragment mBackHandedFragment;
 
 
     @Override
@@ -59,19 +62,37 @@ public class MainActivity extends BaseActivity {
     }
 
 
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        if (KeyEvent.KEYCODE_BACK == keyCode && event.getAction() == KeyEvent.ACTION_DOWN) {
+//
+//            if ((System.currentTimeMillis() - mKeyTime) > 2000) {
+//                mKeyTime = System.currentTimeMillis();
+//                Toast.makeText(getApplicationContext(), "确定要离开吗？", Toast.LENGTH_SHORT).show();
+//            } else {
+//                finish();
+//                System.exit(0);
+//            }
+//            return true;
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
+
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (KeyEvent.KEYCODE_BACK == keyCode && event.getAction() == KeyEvent.ACTION_DOWN) {
-            if ((System.currentTimeMillis() - mKeyTime) > 2000) {
-                mKeyTime = System.currentTimeMillis();
-                Toast.makeText(getApplicationContext(), "确定要离开吗？", Toast.LENGTH_SHORT).show();
+    public void onBackPressed() {
+        if (mBackHandedFragment == null || !mBackHandedFragment.onBackPressed()) {
+            if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
+                if ((System.currentTimeMillis() - mKeyTime) > 2000) {
+                    mKeyTime = System.currentTimeMillis();
+                    Toast.makeText(getApplicationContext(), "确定要离开吗？", Toast.LENGTH_SHORT).show();
+                } else {
+                    finish();
+                    System.exit(0);
+                }
             } else {
-                finish();
-                System.exit(0);
+                getSupportFragmentManager().popBackStack();
             }
-            return true;
         }
-        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -102,4 +123,8 @@ public class MainActivity extends BaseActivity {
                 REQUEST_PERMISSION);
     }
 
+    @Override
+    public void setSelectedFragment(BaseFragment selectedFragment) {
+        this.mBackHandedFragment = selectedFragment;
+    }
 }

@@ -36,7 +36,7 @@ public class VideoFilePresenter extends BasePresenter<IVideoFileView> {
     /**
      * 所有视频文件
      */
-    private List<File> videoFiles = new ArrayList<File>();
+
 
     private VideoFileDao mVideoFileDao;
     private VideoInfoDao mVideoInfoDao;
@@ -49,36 +49,41 @@ public class VideoFilePresenter extends BasePresenter<IVideoFileView> {
     }
 
     public void getVideoFileList() {
+        final List<VideoFile> videoFiles = mVideoFileDao.queryBuilder().list();
+        if (videoFiles != null && videoFiles.size() >0){
+            mView.onVideoFileSuccess(videoFiles);
+        }else {
+            final List<File> files = new ArrayList<File>();
+            File rootFile = Environment.getExternalStorageDirectory();
+            if (rootFile != null) {
+                Observable<File> observable = Observable.just(rootFile)
+                        .flatMap(new Func1<File, Observable<File>>() {
+                            @Override
+                            public Observable<File> call(File file) {
+                                return listFiles(file);
+                            }
+                        });
 
-        File rootFile = Environment.getExternalStorageDirectory();
-        if (rootFile != null) {
-            Observable<File> observable = Observable.just(rootFile)
-                    .flatMap(new Func1<File, Observable<File>>() {
-                        @Override
-                        public Observable<File> call(File file) {
-                            return listFiles(file);
-                        }
-                    });
+                addSubscription(observable, new Subscriber<File>() {
+                    @Override
+                    public void onCompleted() {
+                        groupByFiles(files);
+                    }
 
-            addSubscription(observable, new Subscriber<File>() {
-                @Override
-                public void onCompleted() {
-                    groupByFiles(videoFiles);
-                }
+                    @Override
+                    public void onError(Throwable e) {
 
-                @Override
-                public void onError(Throwable e) {
+                    }
 
-                }
+                    @Override
+                    public void onNext(File file) {
+                        files.add(file);
+                    }
 
-                @Override
-                public void onNext(File file) {
-                    videoFiles.add(file);
-                }
-
-            });
-        } else {
-            LogUtils.i(TAG, "get root file is null,please check sdcard!");
+                });
+            } else {
+                LogUtils.i(TAG, "get root file is null,please check sdcard!");
+            }
         }
     }
 
@@ -99,7 +104,6 @@ public class VideoFilePresenter extends BasePresenter<IVideoFileView> {
             public void onCompleted() {
                 List<VideoFile> list = mVideoFileDao.queryBuilder().build().list();
                 mView.onVideoFileSuccess(list);
-                videoFiles.clear();
             }
 
             @Override
