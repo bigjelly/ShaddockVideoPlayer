@@ -1,7 +1,12 @@
 package com.bigjelly.shaddockvideoplayer.presenter.video;
 
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.Environment;
 
+import com.bigjelly.shaddockvideoplayer.AndFastApplication;
+import com.bigjelly.shaddockvideoplayer.greendao.DaoSession;
+import com.bigjelly.shaddockvideoplayer.greendao.VideoFileDao;
+import com.bigjelly.shaddockvideoplayer.greendao.VideoInfoDao;
 import com.bigjelly.shaddockvideoplayer.model.VideoFile;
 import com.bigjelly.shaddockvideoplayer.model.VideoInfo;
 import com.bigjelly.shaddockvideoplayer.presenter.base.BasePresenter;
@@ -16,6 +21,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
@@ -32,13 +38,14 @@ public class VideoFilePresenter extends BasePresenter<IVideoFileView> {
      */
     private List<File> videoFiles = new ArrayList<File>();
 
-    /**
-     * 包含有视频文件夹集合
-     */
-    private List<VideoFile> fileBeans = new ArrayList<VideoFile>();
+    private VideoFileDao mVideoFileDao;
+    private VideoInfoDao mVideoInfoDao;
 
     public VideoFilePresenter(IVideoFileView view) {
         super(view);
+        DaoSession daoSession = ((AndFastApplication) AndFastApplication.getContext()).getDaoSession();
+        mVideoFileDao = daoSession.getVideoFileDao();
+        mVideoInfoDao = daoSession.getVideoInfoDao();
     }
 
     public void getVideoFileList() {
@@ -80,6 +87,7 @@ public class VideoFilePresenter extends BasePresenter<IVideoFileView> {
      * @param files 文件集合
      */
     private void groupByFiles(List<File> files) {
+
         addSubscription(Observable.from(files).groupBy(new Func1<File, File>() {
             @Override
             public File call(File file) {
@@ -89,9 +97,9 @@ public class VideoFilePresenter extends BasePresenter<IVideoFileView> {
         }), new Subscriber<GroupedObservable<File, File>>() {
             @Override
             public void onCompleted() {
-                mView.onVideoFileSuccess(fileBeans);
+                List<VideoFile> list = mVideoFileDao.queryBuilder().build().list();
+                mView.onVideoFileSuccess(list);
                 videoFiles.clear();
-                fileBeans.clear();
             }
 
             @Override
@@ -101,8 +109,10 @@ public class VideoFilePresenter extends BasePresenter<IVideoFileView> {
 
             @Override
             public void onNext(GroupedObservable<File, File> fileFileGroupedObservable) {
+                //.observeOn(Schedulers.computation())  //代表CPU计算密集型的操作, 例如需要大量计算的操作
                 fileFileGroupedObservable
-                        .observeOn(Schedulers.computation())  //代表CPU计算密集型的操作, 例如需要大量计算的操作
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<File>() {
                     int count = 0;
                     File tmpFile;
@@ -113,10 +123,21 @@ public class VideoFilePresenter extends BasePresenter<IVideoFileView> {
                         videoFile.name = tmpFile.getParentFile().getName();
                         videoFile.count = count;
                         videoFile.path = tmpFile.getAbsolutePath();
-                        videoFile.videoInfos = videoInfos;
-                        fileBeans.add(videoFile);
+
+                        try {
+                            mVideoFileDao.insert(videoFile);
+
+                            VideoFile unique = mVideoFileDao.queryBuilder().where(VideoFileDao.Properties.Path.eq(tmpFile.getAbsoluteFile())).unique();
+                            for (VideoInfo v:videoInfos) {
+                                v.fileID = unique.fileID;
+                                mVideoInfoDao.insert(v);
+                            }
+                        }catch (SQLiteConstraintException e){
+                            LogUtils.i(TAG,"Insert repetition file!");
+                        }
                         count = 0;
                         tmpFile = null;
+                        videoInfos.clear();
                     }
 
                     @Override

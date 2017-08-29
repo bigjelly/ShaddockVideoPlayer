@@ -18,7 +18,7 @@ import com.bigjelly.shaddockvideoplayer.model.VideoInfo;
 /** 
  * DAO for table "VIDEO_INFO".
 */
-public class VideoInfoDao extends AbstractDao<VideoInfo, Integer> {
+public class VideoInfoDao extends AbstractDao<VideoInfo, Long> {
 
     public static final String TABLENAME = "VIDEO_INFO";
 
@@ -27,8 +27,8 @@ public class VideoInfoDao extends AbstractDao<VideoInfo, Integer> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property ID = new Property(0, int.class, "ID", true, "ID");
-        public final static Property FileID = new Property(1, int.class, "fileID", false, "FILE_ID");
+        public final static Property ID = new Property(0, Long.class, "ID", true, "_id");
+        public final static Property FileID = new Property(1, Long.class, "fileID", false, "FILE_ID");
         public final static Property Name = new Property(2, String.class, "name", false, "NAME");
         public final static Property Path = new Property(3, String.class, "path", false, "PATH");
         public final static Property Time = new Property(4, String.class, "time", false, "TIME");
@@ -49,10 +49,10 @@ public class VideoInfoDao extends AbstractDao<VideoInfo, Integer> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"VIDEO_INFO\" (" + //
-                "\"ID\" INTEGER PRIMARY KEY NOT NULL ," + // 0: ID
-                "\"FILE_ID\" INTEGER NOT NULL ," + // 1: fileID
+                "\"_id\" INTEGER PRIMARY KEY ," + // 0: ID
+                "\"FILE_ID\" INTEGER," + // 1: fileID
                 "\"NAME\" TEXT," + // 2: name
-                "\"PATH\" TEXT," + // 3: path
+                "\"PATH\" TEXT UNIQUE ," + // 3: path
                 "\"TIME\" TEXT," + // 4: time
                 "\"SIZE\" TEXT);"); // 5: size
     }
@@ -66,8 +66,16 @@ public class VideoInfoDao extends AbstractDao<VideoInfo, Integer> {
     @Override
     protected final void bindValues(DatabaseStatement stmt, VideoInfo entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getID());
-        stmt.bindLong(2, entity.getFileID());
+ 
+        Long ID = entity.getID();
+        if (ID != null) {
+            stmt.bindLong(1, ID);
+        }
+ 
+        Long fileID = entity.getFileID();
+        if (fileID != null) {
+            stmt.bindLong(2, fileID);
+        }
  
         String name = entity.getName();
         if (name != null) {
@@ -93,8 +101,16 @@ public class VideoInfoDao extends AbstractDao<VideoInfo, Integer> {
     @Override
     protected final void bindValues(SQLiteStatement stmt, VideoInfo entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getID());
-        stmt.bindLong(2, entity.getFileID());
+ 
+        Long ID = entity.getID();
+        if (ID != null) {
+            stmt.bindLong(1, ID);
+        }
+ 
+        Long fileID = entity.getFileID();
+        if (fileID != null) {
+            stmt.bindLong(2, fileID);
+        }
  
         String name = entity.getName();
         if (name != null) {
@@ -118,15 +134,15 @@ public class VideoInfoDao extends AbstractDao<VideoInfo, Integer> {
     }
 
     @Override
-    public Integer readKey(Cursor cursor, int offset) {
-        return cursor.getInt(offset + 0);
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public VideoInfo readEntity(Cursor cursor, int offset) {
         VideoInfo entity = new VideoInfo( //
-            cursor.getInt(offset + 0), // ID
-            cursor.getInt(offset + 1), // fileID
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // ID
+            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // fileID
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // name
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // path
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // time
@@ -137,8 +153,8 @@ public class VideoInfoDao extends AbstractDao<VideoInfo, Integer> {
      
     @Override
     public void readEntity(Cursor cursor, VideoInfo entity, int offset) {
-        entity.setID(cursor.getInt(offset + 0));
-        entity.setFileID(cursor.getInt(offset + 1));
+        entity.setID(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setFileID(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
         entity.setName(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setPath(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setTime(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
@@ -146,12 +162,13 @@ public class VideoInfoDao extends AbstractDao<VideoInfo, Integer> {
      }
     
     @Override
-    protected final Integer updateKeyAfterInsert(VideoInfo entity, long rowId) {
-        return entity.getID();
+    protected final Long updateKeyAfterInsert(VideoInfo entity, long rowId) {
+        entity.setID(rowId);
+        return rowId;
     }
     
     @Override
-    public Integer getKey(VideoInfo entity) {
+    public Long getKey(VideoInfo entity) {
         if(entity != null) {
             return entity.getID();
         } else {
@@ -161,7 +178,7 @@ public class VideoInfoDao extends AbstractDao<VideoInfo, Integer> {
 
     @Override
     public boolean hasKey(VideoInfo entity) {
-        throw new UnsupportedOperationException("Unsupported for entities with a non-null key");
+        return entity.getID() != null;
     }
 
     @Override
@@ -170,7 +187,7 @@ public class VideoInfoDao extends AbstractDao<VideoInfo, Integer> {
     }
     
     /** Internal query to resolve the "videoInfos" to-many relationship of VideoFile. */
-    public List<VideoInfo> _queryVideoFile_VideoInfos(int fileID) {
+    public List<VideoInfo> _queryVideoFile_VideoInfos(Long fileID) {
         synchronized (this) {
             if (videoFile_VideoInfosQuery == null) {
                 QueryBuilder<VideoInfo> queryBuilder = queryBuilder();

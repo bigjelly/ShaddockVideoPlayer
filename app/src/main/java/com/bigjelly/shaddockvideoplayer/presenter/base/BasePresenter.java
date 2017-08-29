@@ -18,7 +18,7 @@ public class BasePresenter<V> {
 
     protected ApiService mApiService = ApiRetrofit.getInstance().getApiService();
     protected V mView;
-    private CompositeSubscription mCompositeSubscription;
+    public CompositeSubscription mCompositeSubscription;
 
     public BasePresenter(V view) {
         attachView(view);

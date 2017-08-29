@@ -15,7 +15,7 @@ import com.bigjelly.shaddockvideoplayer.model.VideoFile;
 /** 
  * DAO for table "VIDEO_FILE".
 */
-public class VideoFileDao extends AbstractDao<VideoFile, Integer> {
+public class VideoFileDao extends AbstractDao<VideoFile, Long> {
 
     public static final String TABLENAME = "VIDEO_FILE";
 
@@ -24,7 +24,7 @@ public class VideoFileDao extends AbstractDao<VideoFile, Integer> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property FileID = new Property(0, int.class, "fileID", true, "FILE_ID");
+        public final static Property FileID = new Property(0, Long.class, "fileID", true, "_id");
         public final static Property Name = new Property(1, String.class, "name", false, "NAME");
         public final static Property Path = new Property(2, String.class, "path", false, "PATH");
         public final static Property Count = new Property(3, int.class, "count", false, "COUNT");
@@ -46,9 +46,9 @@ public class VideoFileDao extends AbstractDao<VideoFile, Integer> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"VIDEO_FILE\" (" + //
-                "\"FILE_ID\" INTEGER PRIMARY KEY NOT NULL ," + // 0: fileID
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: fileID
                 "\"NAME\" TEXT," + // 1: name
-                "\"PATH\" TEXT," + // 2: path
+                "\"PATH\" TEXT UNIQUE ," + // 2: path
                 "\"COUNT\" INTEGER NOT NULL );"); // 3: count
     }
 
@@ -61,7 +61,11 @@ public class VideoFileDao extends AbstractDao<VideoFile, Integer> {
     @Override
     protected final void bindValues(DatabaseStatement stmt, VideoFile entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getFileID());
+ 
+        Long fileID = entity.getFileID();
+        if (fileID != null) {
+            stmt.bindLong(1, fileID);
+        }
  
         String name = entity.getName();
         if (name != null) {
@@ -78,7 +82,11 @@ public class VideoFileDao extends AbstractDao<VideoFile, Integer> {
     @Override
     protected final void bindValues(SQLiteStatement stmt, VideoFile entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getFileID());
+ 
+        Long fileID = entity.getFileID();
+        if (fileID != null) {
+            stmt.bindLong(1, fileID);
+        }
  
         String name = entity.getName();
         if (name != null) {
@@ -99,14 +107,14 @@ public class VideoFileDao extends AbstractDao<VideoFile, Integer> {
     }
 
     @Override
-    public Integer readKey(Cursor cursor, int offset) {
-        return cursor.getInt(offset + 0);
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public VideoFile readEntity(Cursor cursor, int offset) {
         VideoFile entity = new VideoFile( //
-            cursor.getInt(offset + 0), // fileID
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // fileID
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // path
             cursor.getInt(offset + 3) // count
@@ -116,19 +124,20 @@ public class VideoFileDao extends AbstractDao<VideoFile, Integer> {
      
     @Override
     public void readEntity(Cursor cursor, VideoFile entity, int offset) {
-        entity.setFileID(cursor.getInt(offset + 0));
+        entity.setFileID(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setPath(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setCount(cursor.getInt(offset + 3));
      }
     
     @Override
-    protected final Integer updateKeyAfterInsert(VideoFile entity, long rowId) {
-        return entity.getFileID();
+    protected final Long updateKeyAfterInsert(VideoFile entity, long rowId) {
+        entity.setFileID(rowId);
+        return rowId;
     }
     
     @Override
-    public Integer getKey(VideoFile entity) {
+    public Long getKey(VideoFile entity) {
         if(entity != null) {
             return entity.getFileID();
         } else {
@@ -138,7 +147,7 @@ public class VideoFileDao extends AbstractDao<VideoFile, Integer> {
 
     @Override
     public boolean hasKey(VideoFile entity) {
-        throw new UnsupportedOperationException("Unsupported for entities with a non-null key");
+        return entity.getFileID() != null;
     }
 
     @Override

@@ -1,7 +1,8 @@
 package com.bigjelly.shaddockvideoplayer.model;
 
-import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Unique;
 
 /**
  * Created by mby on 17-8-24.
@@ -10,14 +11,17 @@ import org.greenrobot.greendao.annotation.Generated;
 @org.greenrobot.greendao.annotation.Entity
 public class VideoInfo extends Entity {
     @Id
-    public int ID;
-    public int fileID;
+    public Long ID;
+    public Long fileID;
     public String name;
+
+    @Unique
     public String path;
+
     public String time;
     public String size;
-    @Generated(hash = 474135323)
-    public VideoInfo(int ID, int fileID, String name, String path, String time,
+    @Generated(hash = 1830830683)
+    public VideoInfo(Long ID, Long fileID, String name, String path, String time,
             String size) {
         this.ID = ID;
         this.fileID = fileID;
@@ -29,16 +33,16 @@ public class VideoInfo extends Entity {
     @Generated(hash = 296402066)
     public VideoInfo() {
     }
-    public int getID() {
+    public Long getID() {
         return this.ID;
     }
-    public void setID(int ID) {
+    public void setID(Long ID) {
         this.ID = ID;
     }
-    public int getFileID() {
+    public Long getFileID() {
         return this.fileID;
     }
-    public void setFileID(int fileID) {
+    public void setFileID(Long fileID) {
         this.fileID = fileID;
     }
     public String getName() {
@@ -65,5 +69,6 @@ public class VideoInfo extends Entity {
     public void setSize(String size) {
         this.size = size;
     }
+
 
 }
