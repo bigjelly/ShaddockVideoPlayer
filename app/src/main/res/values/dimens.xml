@@ -10,5 +10,7 @@
     <dimen name="splash_ad_ignore">36.0dip</dimen>
 
     <dimen name="text_margin">10dp</dimen>
+    <dimen name="view_line">1dp</dimen>
+    <dimen name="view_margin_small">10dp</dimen>
 
 </resources>

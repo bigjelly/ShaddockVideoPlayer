@@ -30,11 +30,12 @@ public class VideoListAdpater extends BaseRecyclerAdapter<VideoInfo> {
     @Override
     protected void convert(BaseViewHolder holder, VideoInfo item) {
         holder.setText(R.id.tv_file_name,item.name);
+        holder.setText(R.id.tv_file_number,item.size);
 
         Glide.with(mContext)
                 .load(Uri.fromFile(new File(item.path)))
-                .placeholder(R.mipmap.ic_video_files)
-                .error(R.mipmap.ic_video_files)
+                .placeholder(R.mipmap.ic_video_bg)
+                .error(R.mipmap.ic_video_bg)
                 .crossFade()
                 .into((ImageView)holder.getView(R.id.img_video));
         holder.getView(R.id.item_root).setOnClickListener(new View.OnClickListener() {

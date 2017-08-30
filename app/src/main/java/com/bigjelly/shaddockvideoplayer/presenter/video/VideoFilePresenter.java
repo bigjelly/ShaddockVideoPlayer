@@ -21,10 +21,8 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.observables.GroupedObservable;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by mby on 17-8-25.
@@ -43,8 +41,19 @@ public class VideoFilePresenter extends BasePresenter<IVideoFileView> {
         mVideoInfoDao = daoSession.getVideoInfoDao();
     }
 
-    public void getVideoFileList() {
-        final List<VideoFile> videoFiles = mVideoFileDao.queryBuilder().list();
+    public void getVideoFileList(boolean isRefresh) {
+        List<VideoFile> videoFiles = mVideoFileDao.queryBuilder().list();
+        if(isRefresh){
+            for (VideoFile v:videoFiles) {
+                File file = new File(v.path);
+                if (v.lastModified != file.lastModified()){
+                    mVideoFileDao.delete(v);
+                    mVideoInfoDao.queryBuilder().where(VideoInfoDao.Properties.FileID.eq(v.fileID)).buildDelete().executeDeleteWithoutDetachingEntities();
+                }
+            }
+            videoFiles = new ArrayList<VideoFile>();
+        }
+
         if (videoFiles != null && videoFiles.size() >0){
             mView.onVideoFileSuccess(videoFiles);
         }else {
@@ -88,13 +97,15 @@ public class VideoFilePresenter extends BasePresenter<IVideoFileView> {
      */
     private void groupByFiles(List<File> files) {
 
-        addSubscription(Observable.from(files).groupBy(new Func1<File, File>() {
+        Observable.from(files)
+                .groupBy(new Func1<File, File>() {
             @Override
             public File call(File file) {
                 /**以视频文件的父文件夹路径进行分组**/
                 return file.getParentFile();
             }
-        }), new Subscriber<GroupedObservable<File, File>>() {
+        })
+                .subscribe(new Subscriber<GroupedObservable<File, File>>() {
             @Override
             public void onCompleted() {
                 List<VideoFile> list = mVideoFileDao.queryBuilder().build().list();
@@ -108,55 +119,127 @@ public class VideoFilePresenter extends BasePresenter<IVideoFileView> {
 
             @Override
             public void onNext(GroupedObservable<File, File> fileFileGroupedObservable) {
-                //.observeOn(Schedulers.computation())  //代表CPU计算密集型的操作, 例如需要大量计算的操作
                 fileFileGroupedObservable
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<File>() {
-                    int count = 0;
-                    File tmpFile;
-                    List<VideoInfo> videoInfos = new ArrayList<VideoInfo>();
-                    @Override
-                    public void onCompleted() {
-                        VideoFile videoFile = new VideoFile();
-                        videoFile.name = tmpFile.getParentFile().getName();
-                        videoFile.count = count;
-                        videoFile.path = tmpFile.getAbsolutePath();
+                            int count = 0;
+                            File tmpFile;
+                            List<VideoInfo> videoInfos = new ArrayList<VideoInfo>();
+                            @Override
+                            public void onCompleted() {
+                                VideoFile videoFile = new VideoFile();
+                                videoFile.name = tmpFile.getParentFile().getName();
+                                videoFile.count = count;
+                                videoFile.path = tmpFile.getParentFile().getAbsolutePath();
+                                videoFile.lastModified = new File(videoFile.path).lastModified();
 
-                        try {
-                            mVideoFileDao.insert(videoFile);
+                                try {
+                                    mVideoFileDao.insert(videoFile);
 
-                            VideoFile unique = mVideoFileDao.queryBuilder().where(VideoFileDao.Properties.Path.eq(tmpFile.getAbsoluteFile())).unique();
-                            for (VideoInfo v:videoInfos) {
-                                v.fileID = unique.fileID;
-                                mVideoInfoDao.insert(v);
+                                    VideoFile unique = mVideoFileDao.queryBuilder().where(VideoFileDao.Properties.Path.eq(tmpFile.getParentFile().getAbsolutePath())).unique();
+                                    for (VideoInfo v:videoInfos) {
+                                        v.fileID = unique.fileID;
+                                        mVideoInfoDao.insert(v);
+                                    }
+                                }catch (SQLiteConstraintException e){
+                                    LogUtils.i(TAG,"Insert repetition file!");
+                                }
+                                count = 0;
+                                tmpFile = null;
+                                videoInfos.clear();
                             }
-                        }catch (SQLiteConstraintException e){
-                            LogUtils.i(TAG,"Insert repetition file!");
-                        }
-                        count = 0;
-                        tmpFile = null;
-                        videoInfos.clear();
-                    }
 
-                    @Override
-                    public void onError(Throwable e) {
+                            @Override
+                            public void onError(Throwable e) {
 
-                    }
+                            }
 
-                    @Override
-                    public void onNext(File file) {
-                        count++;
-                        tmpFile = file;
-                        VideoInfo videoInfo = new VideoInfo();
-                        videoInfo.name = file.getName();
-                        videoInfo.path = file.getAbsolutePath();
-                        videoInfo.size = FileUtils.showFileSize(file.length());
-                        videoInfos.add(videoInfo);
-                    }
-                });
+                            @Override
+                            public void onNext(File file) {
+                                count++;
+                                tmpFile = file;
+                                VideoInfo videoInfo = new VideoInfo();
+                                videoInfo.name = file.getName();
+                                videoInfo.path = file.getAbsolutePath();
+                                videoInfo.size = FileUtils.showFileSize(file.length());
+                                videoInfos.add(videoInfo);
+                            }
+                        });
+
             }
         });
+
+
+
+
+//        addSubscription(Observable.from(files).groupBy(new Func1<File, File>() {
+//            @Override
+//            public File call(File file) {
+//                /**以视频文件的父文件夹路径进行分组**/
+//                return file.getParentFile();
+//            }
+//        }), new Subscriber<GroupedObservable<File, File>>() {
+//            @Override
+//            public void onCompleted() {
+//                List<VideoFile> list = mVideoFileDao.queryBuilder().build().list();
+//                mView.onVideoFileSuccess(list);
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//
+//            }
+//
+//            @Override
+//            public void onNext(GroupedObservable<File, File> fileFileGroupedObservable) {
+//                //.observeOn(Schedulers.computation())  //代表CPU计算密集型的操作, 例如需要大量计算的操作
+//                fileFileGroupedObservable
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(Schedulers.io())
+//                        .subscribe(new Subscriber<File>() {
+//                    int count = 0;
+//                    File tmpFile;
+//                    List<VideoInfo> videoInfos = new ArrayList<VideoInfo>();
+//                    @Override
+//                    public void onCompleted() {
+//                        VideoFile videoFile = new VideoFile();
+//                        videoFile.name = tmpFile.getParentFile().getName();
+//                        videoFile.count = count;
+//                        videoFile.path = tmpFile.getAbsolutePath();
+//
+//                        try {
+//                            mVideoFileDao.insert(videoFile);
+//
+//                            VideoFile unique = mVideoFileDao.queryBuilder().where(VideoFileDao.Properties.Path.eq(tmpFile.getAbsoluteFile())).unique();
+//                            for (VideoInfo v:videoInfos) {
+//                                v.fileID = unique.fileID;
+//                                mVideoInfoDao.insert(v);
+//                            }
+//                        }catch (SQLiteConstraintException e){
+//                            LogUtils.i(TAG,"Insert repetition file!");
+//                        }
+//                        count = 0;
+//                        tmpFile = null;
+//                        videoInfos.clear();
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onNext(File file) {
+//                        count++;
+//                        tmpFile = file;
+//                        VideoInfo videoInfo = new VideoInfo();
+//                        videoInfo.name = file.getName();
+//                        videoInfo.path = file.getAbsolutePath();
+//                        videoInfo.size = FileUtils.showFileSize(file.length());
+//                        videoInfos.add(videoInfo);
+//                    }
+//                });
+//            }
+//        });
     }
 
 

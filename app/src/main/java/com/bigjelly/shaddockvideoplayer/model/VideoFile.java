@@ -28,6 +28,8 @@ public class VideoFile extends Entity{
 
     public int count;
 
+    public Long lastModified;
+
     @ToMany(referencedJoinProperty = "fileID")
     @OrderBy("name ASC")
     public List<VideoInfo> videoInfos;
@@ -40,12 +42,13 @@ public class VideoFile extends Entity{
     @Generated(hash = 79247334)
     private transient VideoFileDao myDao;
 
-    @Generated(hash = 214980753)
-    public VideoFile(Long fileID, String name, String path, int count) {
+    @Generated(hash = 467133075)
+    public VideoFile(Long fileID, String name, String path, int count, Long lastModified) {
         this.fileID = fileID;
         this.name = name;
         this.path = path;
         this.count = count;
+        this.lastModified = lastModified;
     }
 
     @Generated(hash = 106420510)
@@ -154,6 +157,14 @@ public class VideoFile extends Entity{
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getVideoFileDao() : null;
+    }
+
+    public Long getLastModified() {
+        return this.lastModified;
+    }
+
+    public void setLastModified(Long lastModified) {
+        this.lastModified = lastModified;
     }
 
 }

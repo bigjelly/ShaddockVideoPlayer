@@ -28,6 +28,7 @@ public class VideoFileDao extends AbstractDao<VideoFile, Long> {
         public final static Property Name = new Property(1, String.class, "name", false, "NAME");
         public final static Property Path = new Property(2, String.class, "path", false, "PATH");
         public final static Property Count = new Property(3, int.class, "count", false, "COUNT");
+        public final static Property LastModified = new Property(4, Long.class, "lastModified", false, "LAST_MODIFIED");
     }
 
     private DaoSession daoSession;
@@ -49,7 +50,8 @@ public class VideoFileDao extends AbstractDao<VideoFile, Long> {
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: fileID
                 "\"NAME\" TEXT," + // 1: name
                 "\"PATH\" TEXT UNIQUE ," + // 2: path
-                "\"COUNT\" INTEGER NOT NULL );"); // 3: count
+                "\"COUNT\" INTEGER NOT NULL ," + // 3: count
+                "\"LAST_MODIFIED\" INTEGER);"); // 4: lastModified
     }
 
     /** Drops the underlying database table. */
@@ -77,6 +79,11 @@ public class VideoFileDao extends AbstractDao<VideoFile, Long> {
             stmt.bindString(3, path);
         }
         stmt.bindLong(4, entity.getCount());
+ 
+        Long lastModified = entity.getLastModified();
+        if (lastModified != null) {
+            stmt.bindLong(5, lastModified);
+        }
     }
 
     @Override
@@ -98,6 +105,11 @@ public class VideoFileDao extends AbstractDao<VideoFile, Long> {
             stmt.bindString(3, path);
         }
         stmt.bindLong(4, entity.getCount());
+ 
+        Long lastModified = entity.getLastModified();
+        if (lastModified != null) {
+            stmt.bindLong(5, lastModified);
+        }
     }
 
     @Override
@@ -117,7 +129,8 @@ public class VideoFileDao extends AbstractDao<VideoFile, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // fileID
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // path
-            cursor.getInt(offset + 3) // count
+            cursor.getInt(offset + 3), // count
+            cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4) // lastModified
         );
         return entity;
     }
@@ -128,6 +141,7 @@ public class VideoFileDao extends AbstractDao<VideoFile, Long> {
         entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setPath(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setCount(cursor.getInt(offset + 3));
+        entity.setLastModified(cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4));
      }
     
     @Override

@@ -30,7 +30,7 @@ public class VideoFilesAdpater extends BaseRecyclerAdapter<VideoFile> {
     }
 
     @Override
-    protected void convert(BaseViewHolder holder, VideoFile item) {
+    protected void convert(BaseViewHolder holder, final VideoFile item) {
         holder.setText(R.id.tv_file_name,item.name);
         holder.setText(R.id.tv_file_number,String.format("共有 %d 个视频",item.count));
 
@@ -43,7 +43,7 @@ public class VideoFilesAdpater extends BaseRecyclerAdapter<VideoFile> {
         holder.getView(R.id.item_root).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentUtils.replace(mFragmentManager,R.id.video_frg,new VideoListFragment(),true,"VideoList");
+                FragmentUtils.replace(mFragmentManager,R.id.video_frg,VideoListFragment.newInstance(item),true,"VideoList");
             }
         });
     }

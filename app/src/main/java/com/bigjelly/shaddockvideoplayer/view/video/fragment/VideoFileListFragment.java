@@ -35,7 +35,7 @@ public class VideoFileListFragment extends BasePresenterFragment<VideoFilePresen
     protected void initWidget(View root) {
         super.initWidget(root);
         TextView textView =findView(R.id.toolbar_title);
-        textView.setText("详细页面");
+        textView.setText(R.string.tab_name_video);
         mRecyclerView = findView(R.id.pull_recycler_view);
 
         // 初始化PullRecyclerView
@@ -54,7 +54,7 @@ public class VideoFileListFragment extends BasePresenterFragment<VideoFilePresen
     @Override
     protected void initData() {
         super.initData();
-        mRecyclerView.postRefreshing();
+       mvpPresenter.getVideoFileList(false);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class VideoFileListFragment extends BasePresenterFragment<VideoFilePresen
 
     @Override
     public void onPullRefresh() {
-        mvpPresenter.getVideoFileList();
+        mvpPresenter.getVideoFileList(true);
     }
 
     @Override

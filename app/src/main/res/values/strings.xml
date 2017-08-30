@@ -7,5 +7,7 @@
     <string name="tab_name_video">视频</string>
     <string name="tab_name_setting">设置</string>
 
+    <string name="tab_name_video_list">视频列表</string>
+
     <string name="splash_ad_ignore">跳过广告</string>
 </resources>
