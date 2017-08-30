@@ -33,11 +33,6 @@ import rx.schedulers.Schedulers;
 public class VideoFilePresenter extends BasePresenter<IVideoFileView> {
     private static final String TAG = "VideoFilePresenter";
 
-    /**
-     * 所有视频文件
-     */
-
-
     private VideoFileDao mVideoFileDao;
     private VideoInfoDao mVideoInfoDao;
 

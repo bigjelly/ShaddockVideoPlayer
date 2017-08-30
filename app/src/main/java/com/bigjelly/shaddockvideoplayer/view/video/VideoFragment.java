@@ -7,7 +7,7 @@ import com.andfast.pullrecyclerview.layoutmanager.XLinearLayoutManager;
 import com.bigjelly.shaddockvideoplayer.R;
 import com.bigjelly.shaddockvideoplayer.util.FragmentUtils;
 import com.bigjelly.shaddockvideoplayer.view.base.BaseFragment;
-import com.bigjelly.shaddockvideoplayer.view.video.adapter.VideoListAdpater;
+import com.bigjelly.shaddockvideoplayer.view.video.adapter.VideoFilesAdpater;
 import com.bigjelly.shaddockvideoplayer.view.video.fragment.VideoFileListFragment;
 
 /**
@@ -18,7 +18,7 @@ public class VideoFragment extends BaseFragment {
 
     private PullRecyclerView mRecyclerView;
     private XLinearLayoutManager mLayoutManager;
-    private VideoListAdpater mAdpater;
+    private VideoFilesAdpater mAdpater;
 
     @Override
     protected int getLayoutId() {

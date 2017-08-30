@@ -12,7 +12,7 @@ import com.bigjelly.shaddockvideoplayer.net.ResultResponse;
 import com.bigjelly.shaddockvideoplayer.presenter.video.VideoFilePresenter;
 import com.bigjelly.shaddockvideoplayer.view.base.BasePresenterFragment;
 import com.bigjelly.shaddockvideoplayer.view.video.Impl.IVideoFileView;
-import com.bigjelly.shaddockvideoplayer.view.video.adapter.VideoListAdpater;
+import com.bigjelly.shaddockvideoplayer.view.video.adapter.VideoFilesAdpater;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
 public class VideoFileListFragment extends BasePresenterFragment<VideoFilePresenter> implements IVideoFileView, PullRecyclerView.OnRecyclerRefreshListener {
     private PullRecyclerView mRecyclerView;
     private XLinearLayoutManager mLayoutManager;
-    private VideoListAdpater mAdpater;
+    private VideoFilesAdpater mAdpater;
 
     @Override
     protected int getLayoutId() {
@@ -44,7 +44,7 @@ public class VideoFileListFragment extends BasePresenterFragment<VideoFilePresen
         DividerItemDecoration itemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
         itemDecoration.setDrawable(getResources().getDrawable(R.drawable.shape_simple_item_decoration));
         mRecyclerView.addItemDecoration(itemDecoration);
-        mAdpater = new VideoListAdpater(getContext(), R.layout.lay_item_video_file, new ArrayList<VideoFile>(),getFragmentManager());
+        mAdpater = new VideoFilesAdpater(getContext(), R.layout.lay_item_video_file, new ArrayList<VideoFile>(),getFragmentManager());
         mRecyclerView.setAdapter(mAdpater);
         mRecyclerView.enablePullRefresh(true); // 开启下拉刷新，默认即为true，可不用设置
         mRecyclerView.enableLoadMore(false);
