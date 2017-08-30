@@ -19,21 +19,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/img_video"
-        android:layout_marginLeft="@dimen/text_margin"
+        android:layout_marginLeft="@dimen/view_margin_small"
         android:layout_toRightOf="@+id/img_video"
         android:textColor="#8a8a8a"
         android:textSize="@dimen/text_size_normal" />
+
 
     <TextView
         android:id="@+id/tv_file_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/img_video"
-        android:layout_marginRight="@dimen/text_margin"
-        android:drawablePadding="2dp"
+        android:layout_marginRight="@dimen/view_margin_small"
         android:gravity="center_vertical"
         android:layout_alignParentRight="true"
         android:textColor="#8a8a8a"
         android:textSize="@dimen/text_size_normal" />
+
+    <ProgressBar
+        android:id="@+id/video_progress"
+        android:layout_marginLeft="@dimen/view_margin_small"
+        android:layout_marginRight="@dimen/view_margin_small"
+        android:layout_marginTop="@dimen/view_margin_small"
+        android:layout_below="@+id/img_video"
+        android:background="@color/colorAccent"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="@dimen/view_line" />
 
 </RelativeLayout>

@@ -1,5 +1,6 @@
 package com.bigjelly.shaddockvideoplayer.view.video.fragment;
 
+import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.view.View;
 import android.widget.TextView;
@@ -7,6 +8,7 @@ import android.widget.TextView;
 import com.andfast.pullrecyclerview.PullRecyclerView;
 import com.andfast.pullrecyclerview.layoutmanager.XLinearLayoutManager;
 import com.bigjelly.shaddockvideoplayer.R;
+import com.bigjelly.shaddockvideoplayer.model.VideoFile;
 import com.bigjelly.shaddockvideoplayer.model.VideoInfo;
 import com.bigjelly.shaddockvideoplayer.net.ResultResponse;
 import com.bigjelly.shaddockvideoplayer.presenter.video.VideoListPresenter;
@@ -25,6 +27,16 @@ public class VideoListFragment extends BasePresenterFragment<VideoListPresenter>
     private PullRecyclerView mRecyclerView;
     private XLinearLayoutManager mLayoutManager;
     private VideoListAdpater mAdpater;
+    private VideoFile mVideoFile;
+
+    public static VideoListFragment newInstance(VideoFile videoFile) {
+
+        Bundle args = new Bundle();
+        args.putSerializable("videoFile",videoFile);
+        VideoListFragment fragment = new VideoListFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     protected int getLayoutId() {
@@ -54,7 +66,13 @@ public class VideoListFragment extends BasePresenterFragment<VideoListPresenter>
     @Override
     protected void initData() {
         super.initData();
-        mRecyclerView.postRefreshing();
+        mvpPresenter.getVideoList(false,mVideoFile.fileID);
+    }
+
+    @Override
+    protected void initBundle(Bundle bundle) {
+        super.initBundle(bundle);
+        mVideoFile = (VideoFile) bundle.getSerializable("videoFile");
     }
 
     @Override
@@ -64,7 +82,7 @@ public class VideoListFragment extends BasePresenterFragment<VideoListPresenter>
 
     @Override
     public void onPullRefresh() {
-        mvpPresenter.getVideoList();
+        mvpPresenter.getVideoList(true,mVideoFile.fileID);
     }
 
     @Override
