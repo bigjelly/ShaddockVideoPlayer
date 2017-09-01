@@ -52,9 +52,11 @@ public class MediaUtils {
             "ym", "zvd", "zvr" };
 
     private static final HashSet<String> mHashVideo;
+    private static final HashSet<String> mHashAudio;
 
     static {
         mHashVideo = new HashSet<String>(Arrays.asList(VIDEO_EXTENSIONS));
+        mHashAudio = new HashSet<String>(Arrays.asList(VIDEO_EXTENSIONS));
     }
 
     /** 获取文件后缀 */
@@ -72,5 +74,10 @@ public class MediaUtils {
     public static boolean isVideo(File f) {
         final String ext = getFileExtension(f);
         return mHashVideo.contains(ext);
+    }
+
+    public static boolean isAudio(File f) {
+        final String ext = getFileExtension(f);
+        return mHashAudio.contains(ext);
     }
 }
