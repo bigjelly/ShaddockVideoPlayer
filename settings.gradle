@@ -1,1 +1,1 @@
-include ':app', ':pullrecyclerview', ':statusbar'
+include ':app', ':pullrecyclerview', ':statusbar',':ijkplayer-java'

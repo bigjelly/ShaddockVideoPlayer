@@ -10,6 +10,7 @@ import com.andfast.pullrecyclerview.BaseRecyclerAdapter;
 import com.andfast.pullrecyclerview.BaseViewHolder;
 import com.bigjelly.shaddockvideoplayer.R;
 import com.bigjelly.shaddockvideoplayer.model.VideoInfo;
+import com.bigjelly.shaddockvideoplayer.view.video.VideoActivity;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
@@ -28,7 +29,7 @@ public class VideoListAdpater extends BaseRecyclerAdapter<VideoInfo> {
     }
 
     @Override
-    protected void convert(BaseViewHolder holder, VideoInfo item) {
+    protected void convert(BaseViewHolder holder, final VideoInfo item) {
         holder.setText(R.id.tv_file_name,item.name);
         holder.setText(R.id.tv_file_number,item.size);
 
@@ -41,7 +42,7 @@ public class VideoListAdpater extends BaseRecyclerAdapter<VideoInfo> {
         holder.getView(R.id.item_root).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                VideoActivity.intentTo(mContext, item.path,item.name);
             }
         });
     }

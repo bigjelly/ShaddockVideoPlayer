@@ -56,7 +56,7 @@ public class MediaUtils {
 
     static {
         mHashVideo = new HashSet<String>(Arrays.asList(VIDEO_EXTENSIONS));
-        mHashAudio = new HashSet<String>(Arrays.asList(VIDEO_EXTENSIONS));
+        mHashAudio = new HashSet<String>(Arrays.asList(AUDIO_EXTENSIONS));
     }
 
     /** 获取文件后缀 */
