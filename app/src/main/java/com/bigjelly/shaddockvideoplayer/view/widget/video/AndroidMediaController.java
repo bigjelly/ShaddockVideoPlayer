@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 public class AndroidMediaController extends MediaController implements IMediaController {
     private ActionBar mActionBar;
+    private View mRootLayout;
 
     public AndroidMediaController(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -57,11 +58,27 @@ public class AndroidMediaController extends MediaController implements IMediaCon
         }
     }
 
+    public void setRootLayout(@NonNull View rootLayout){
+        mRootLayout = rootLayout;
+        mRootLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+    }
+
+    /**
+     * 设置播放的文件名称
+     */
+    public void setTitle(String name) {
+        if (mActionBar != null) {
+            mActionBar.setTitle(name);
+        }
+    }
+
     @Override
     public void show() {
         super.show();
         if (mActionBar != null)
             mActionBar.show();
+        if (mRootLayout != null)
+            mRootLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
     }
 
     @Override
@@ -69,6 +86,8 @@ public class AndroidMediaController extends MediaController implements IMediaCon
         super.hide();
         if (mActionBar != null)
             mActionBar.hide();
+        if (mRootLayout != null)
+            mRootLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         for (View view : mShowOnceArray)
             view.setVisibility(View.GONE);
         mShowOnceArray.clear();

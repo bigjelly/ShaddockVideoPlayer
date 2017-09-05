@@ -47,10 +47,4 @@
             tools:context=".toolbar_widget" />
     </FrameLayout>
 
-    <!-- The navigation drawer -->
-    <FrameLayout android:id="@+id/right_drawer"
-        android:layout_width="240dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="right"
-        android:background="@color/colorPrimary" />
 </android.support.v4.widget.DrawerLayout>
